@@ -1,5 +1,9 @@
 # KOP GDPR Project
 
+## Documentation
+
+- [Privacy Policy](./PRIVACY_POLICY.md)
+- [License](./LICENSE)
 
 ## Автор
 
