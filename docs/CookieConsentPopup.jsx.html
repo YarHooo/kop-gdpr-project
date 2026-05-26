@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>JSDoc: Source: CookieConsentPopup.jsx</title>
+
+    <script src="scripts/prettify/prettify.js"> </script>
+    <script src="scripts/prettify/lang-css.js"> </script>
+    <!--[if lt IE 9]>
+      <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+    <link type="text/css" rel="stylesheet" href="styles/prettify-tomorrow.css">
+    <link type="text/css" rel="stylesheet" href="styles/jsdoc-default.css">
+</head>
+
+<body>
+
+<div id="main">
+
+    <h1 class="page-title">Source: CookieConsentPopup.jsx</h1>
+
+    
+
+
+
+    
+    <section>
+        <article>
+            <pre class="prettyprint source linenums"><code>import { useEffect, useState } from 'react';
+import { Button } from './Button';
+import './CookieConsentPopup.css';
+
+const STORAGE_KEY = 'kop_gdpr_cookie_preferences';
+
+const defaultPreferences = {
+  necessary: true,
+  analytics: false,
+  marketing: false,
+};
+
+/**
+ * GDPR-oriented cookie consent popup.
+ * Stores user preferences in localStorage and allows accepting, rejecting, or customizing optional cookies.
+ *
+ * @param {object} props Component properties.
+ * @param {string} props.projectName Project name displayed in the popup.
+ * @param {boolean} props.forceVisible Forces popup visibility for previews and Storybook.
+ * @returns {JSX.Element|null} Cookie popup or null if consent has already been saved.
+ */
+export function CookieConsentPopup({ projectName = 'KOP GDPR Project', forceVisible = false }) {
+  const [visible, setVisible] = useState(forceVisible);
+  const [customize, setCustomize] = useState(false);
+  const [preferences, setPreferences] = useState(defaultPreferences);
+
+  useEffect(() => {
+    if (forceVisible) {
+      setVisible(true);
+      return;
+    }
+
+    const savedPreferences = localStorage.getItem(STORAGE_KEY);
+    setVisible(!savedPreferences);
+  }, [forceVisible]);
+
+  const savePreferences = (nextPreferences) => {
+    localStorage.setItem(
+      STORAGE_KEY,
+      JSON.stringify({ ...nextPreferences, savedAt: new Date().toISOString() }),
+    );
+    setPreferences(nextPreferences);
+    setVisible(forceVisible);
+  };
+
+  const togglePreference = (key) => {
+    if (key === 'necessary') return;
+    setPreferences((current) => ({ ...current, [key]: !current[key] }));
+  };
+
+  if (!visible) return null;
+
+  return (
+    &lt;section className="cookie-popup" aria-label="Cookie consent popup">
+      &lt;div className="cookie-popup__content">
+        &lt;p className="cookie-popup__eyebrow">GDPR Cookie Consent&lt;/p>
+        &lt;h2>Налаштування cookies для {projectName}&lt;/h2>
+        &lt;p>
+          Ми використовуємо необхідні cookies для роботи сайту. Аналітичні та маркетингові cookies
+          вмикаються тільки після вашої згоди. Ви можете прийняти всі, відхилити необов’язкові або
+          налаштувати категорії окремо.
+        &lt;/p>
+
+        {customize &amp;&amp; (
+          &lt;div className="cookie-popup__options">
+            &lt;label>
+              &lt;input type="checkbox" checked={preferences.necessary} disabled readOnly />
+              &lt;span>
+                &lt;strong>Necessary&lt;/strong>
+                потрібні для базової роботи сайту
+              &lt;/span>
+            &lt;/label>
+            &lt;label>
+              &lt;input
+                type="checkbox"
+                checked={preferences.analytics}
+                onChange={() => togglePreference('analytics')}
+              />
+              &lt;span>
+                &lt;strong>Analytics&lt;/strong>
+                допомагають зрозуміти використання сайту
+              &lt;/span>
+            &lt;/label>
+            &lt;label>
+              &lt;input
+                type="checkbox"
+                checked={preferences.marketing}
+                onChange={() => togglePreference('marketing')}
+              />
+              &lt;span>
+                &lt;strong>Marketing&lt;/strong>
+                використовуються для персоналізованого контенту
+              &lt;/span>
+            &lt;/label>
+          &lt;/div>
+        )}
+
+        &lt;div className="cookie-popup__actions">
+          &lt;Button
+            label="Accept all"
+            variant="primary"
+            onClick={() => savePreferences({ necessary: true, analytics: true, marketing: true })}
+          />
+          &lt;Button
+            label="Reject optional"
+            variant="secondary"
+            onClick={() => savePreferences(defaultPreferences)}
+          />
+          {customize ? (
+            &lt;Button label="Save preferences" variant="primary" onClick={() => savePreferences(preferences)} />
+          ) : (
+            &lt;Button label="Customize" variant="secondary" onClick={() => setCustomize(true)} />
+          )}
+        &lt;/div>
+      &lt;/div>
+    &lt;/section>
+  );
+}
+
+export { STORAGE_KEY };
+</code></pre>
+        </article>
+    </section>
+
+
+
+
+</div>
+
+<nav>
+    <h2><a href="index.html">Home</a></h2><h3>Global</h3><ul><li><a href="global.html#Button">Button</a></li><li><a href="global.html#CookieConsentPopup">CookieConsentPopup</a></li></ul>
+</nav>
+
+<br class="clear">
+
+<footer>
+    Documentation generated by <a href="https://github.com/jsdoc/jsdoc">JSDoc 4.0.5</a> on Tue May 26 2026 09:54:10 GMT+0000 (Coordinated Universal Time)
+</footer>
+
+<script> prettyPrint(); </script>
+<script src="scripts/linenumber.js"> </script>
+</body>
+</html>
